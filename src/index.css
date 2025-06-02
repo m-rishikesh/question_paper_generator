@@ -1,0 +1,7 @@
+@import "tailwindcss";
+.pdf-safe-colors * {
+    color: #000 !important; /* Use simple black for text */
+    background-color: #fff !important; /* Ensure background is white */
+    box-shadow: none !important; /* Avoid shadow rendering bugs */
+  }
+  
