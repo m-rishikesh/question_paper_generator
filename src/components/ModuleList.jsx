@@ -140,7 +140,7 @@ const ModuleList = ({ metadata, QB }) => {
   };
 
   // Function to generate two questions for each location ('before' and 'after' OR) in selected modules
-  const generateFourQuestionsPerModule = () => {
+  const generatethreequestionpermodule = () => {
     setModules((prevModules) =>
       prevModules.map((mod) => {
         // Only add questions to modules that are checked
@@ -171,7 +171,7 @@ const ModuleList = ({ metadata, QB }) => {
         };
 
         // Add two questions "before" the OR
-        for (let i = 0; i < 2; i++) {
+        for (let i = 0; i < 3; i++) {
           const newQuestion = {
             id: Date.now() + Math.random() + i * 0.001, // Ensure unique ID
             location: 'before',
@@ -182,7 +182,7 @@ const ModuleList = ({ metadata, QB }) => {
         }
 
         // Add two questions "after" the OR
-        for (let i = 0; i < 2; i++) {
+        for (let i = 0; i < 3; i++) {
           const newQuestion = {
             id: Date.now() + Math.random() + 1000 + i * 0.001, // Ensure unique ID
             location: 'after',
@@ -261,10 +261,10 @@ const ModuleList = ({ metadata, QB }) => {
         </div>
         <div className="flex gap-4">
           <button
-            onClick={generateFourQuestionsPerModule}
+            onClick={generatethreequestionpermodule}
             className="px-6 py-2 bg-green-600 text-white rounded hover:bg-green-700"
           >
-            Generate 2 Question Per Module
+            Generate 3 Question Per Module
           </button>
           <button
             onClick={() => setShowPreview(true)}

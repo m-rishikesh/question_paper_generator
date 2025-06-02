@@ -3,15 +3,21 @@ import * as XLSX from 'xlsx';
 
 const MetadataForm = ({ onSubmit, setQB }) => {
   const [subject, setSubject] = useState('');
+  const [subjectcode,setsubjectcode] = useState('');
+  const [examsections,setexamsections] = useState('');
   const [semester, setSemester] = useState('1');
   const [examType, setExamType] = useState('Midterm');
+  const [time,settime] = useState('');
+  const [duration,setduration] = useState("");
+  const [date,setdate]= useState('');
+  const [questionpapersetter,setquesetionpapersetter] = useState('');
   const [file, setFile] = useState(null);
   const [questionBank, setQuestionBank] = useState({});
 
   const handleSubmit = (e) => {
     e.preventDefault();
     // Pass form data and questionBank to the parent component
-    onSubmit({ subject, semester, examType, questionBank });
+    onSubmit({ subject, semester, examType, questionBank,subjectcode,examsections,time,date,questionpapersetter });
   };
 
   const handleFileUpload = (event) => {
@@ -82,7 +88,73 @@ const MetadataForm = ({ onSubmit, setQB }) => {
         <input
           type="text"
           value={subject}
+          placeholder='Enter the Subject Name'
           onChange={(e) => setSubject(e.target.value)}
+          required
+          className="w-full p-2 border rounded"
+        />
+      </div>
+      <div>
+        <label className="block mb-1 font-medium">Duration</label>
+        <input
+          type="text"
+          value={duration}
+          placeholder='Enter the Duration of Exam'
+          onChange={(e) => setduration(e.target.value)}
+          required
+          className="w-full p-2 border rounded"
+        />
+      </div>
+      <div>
+        <label className="block mb-1 font-medium">SubjectCode</label>
+        <input
+          type="text"
+          placeholder='Enter the Subject Code'
+          value={subjectcode}
+          onChange={(e) => setsubjectcode(e.target.value)}
+          required
+          className="w-full p-2 border rounded"
+        />
+      </div>
+      <div>
+        <label className="block mb-1 font-medium">Class Sections</label>
+        <input
+          type="text"
+          value={examsections}
+          placeholder='Enter the Class Sections '
+          onChange={(e) => setexamsections(e.target.value)}
+          required
+          className="w-full p-2 border rounded"
+        />
+      </div>
+      <div>
+        <label className="block mb-1 font-medium">Time Of Examination</label>
+        <input
+          type="text"
+          value={time}
+          placeholder='Enter the Time of Exam'
+          onChange={(e) => settime(e.target.value)}
+          required
+          className="w-full p-2 border rounded"
+        />
+      </div>
+      <div>
+        <label className="block mb-1 font-medium">Date of Examination</label>
+        <input
+          type="text"
+          value={date}
+          placeholder='Enter the Date of Exam'
+          onChange={(e) => setdate(e.target.value)}
+          required
+          className="w-full p-2 border rounded"
+        />
+      </div>
+      <div>
+        <label className="block mb-1 font-medium">Exam Paper Setter</label>
+        <input
+          type="text" placeholder='Enter the Subject Faculty Name'
+          value={questionpapersetter}
+          onChange={(e) => setquesetionpapersetter(e.target.value)}
           required
           className="w-full p-2 border rounded"
         />
