@@ -45,9 +45,10 @@ const MetadataForm = ({ onSubmit, setQB }) => {
         // Create a structured question object with all necessary fields
         const questionObj = {
           text: row['Question'] || '', // The question text
-          co: row['co'] || '',         // CO value
-          rbt: row['rbt'] || '',       // RBT value
-          image_link: row['image_link'] || '' // Image link if available
+          co: row['CO'] || '',         // CO value
+          rbt: row['RBT_Level'] || '',       // RBT value
+          image_link: row['image_link'] || '', // Image link if available
+          Marks:row['Marks'] || ''
         };
         
         // Initialize the array for this module if it doesn't exist

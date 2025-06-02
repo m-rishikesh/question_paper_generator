@@ -21,12 +21,11 @@ const ModuleList = ({ metadata, QB }) => {
         Marks: q.Marks,
         location: q.location,
         image: q.image,
-        co: q.co,          // Standardized field name
-        rbt: q.rbt,        // Standardized field name
+        co: q.co, // Standardized field name
+        rbt: q.rbt, // Standardized field name
         image_link: q.image, // Assuming you use the uploaded image URL
       })),
     }));
-
 
   if (showPreview) {
     return (
@@ -37,12 +36,13 @@ const ModuleList = ({ metadata, QB }) => {
       />
     );
   }
-  
 
   const toggleModule = (id) => {
     setModules((prev) =>
       prev.map((mod) =>
-        mod.id === id ? { ...mod, checked: !mod.checked } : mod
+        mod.id === id
+          ? { ...mod, checked: !mod.checked, questions: !mod.checked ? [] : mod.questions } // Clear questions if unchecked
+          : mod
       )
     );
   };
@@ -54,13 +54,12 @@ const ModuleList = ({ metadata, QB }) => {
       Marks: '',
       location,
       image: '',
-      co: '',       // Standardized field name
-      rbt: '',      // Standardized field name
+      co: '', // Standardized field name
+      rbt: '', // Standardized field name
       image_link: '',
       isEditing: true,
     };
-    
-    
+
     setModules((prev) =>
       prev.map((mod) =>
         mod.id === id ? { ...mod, questions: [...mod.questions, newQuestion] } : mod
@@ -113,32 +112,91 @@ const ModuleList = ({ metadata, QB }) => {
       console.warn(`No questions available for module ${modId}`);
       return;
     }
-    
+
     const randomIndex = Math.floor(Math.random() * QB[modId].length);
     const randomQuestion = QB[modId][randomIndex];
-    
+
     // Update the question text
     updateQuestion(modId, qId, 'text', randomQuestion.text || randomQuestion);
-    
+
     // Check if the question bank has CO and RBT information and update if available
     if (randomQuestion.co) {
       updateQuestion(modId, qId, 'co', randomQuestion.co);
     }
-    
+
     if (randomQuestion.rbt) {
       updateQuestion(modId, qId, 'rbt', randomQuestion.rbt);
     }
-    
+
     // If marks are available in the question bank, update them too
     if (randomQuestion.Marks) {
       updateQuestion(modId, qId, 'Marks', randomQuestion.Marks);
     }
-    
+
     // If image is available, update it
     if (randomQuestion.image || randomQuestion.image_link) {
       updateQuestion(modId, qId, 'image', randomQuestion.image || randomQuestion.image_link);
     }
   };
+
+  // Function to generate two questions for each location ('before' and 'after' OR) in selected modules
+  const generateFourQuestionsPerModule = () => {
+    setModules((prevModules) =>
+      prevModules.map((mod) => {
+        // Only add questions to modules that are checked
+        if (!mod.checked) {
+          return mod;
+        }
+
+        // Filter out existing 'before' and 'after' questions to prevent accumulation
+        const existingOtherQuestions = mod.questions.filter(
+          (q) => q.location !== 'before' && q.location !== 'after'
+        );
+        let updatedQuestions = [...existingOtherQuestions]; // Start with questions not in 'before'/'after' sections
+
+        // Function to get a random question from QB
+        const getRandomQBQuestion = (moduleID) => {
+          if (!QB[moduleID] || QB[moduleID].length === 0) {
+            return {}; // Return empty object if no questions
+          }
+          const randomIndex = Math.floor(Math.random() * QB[moduleID].length);
+          const question = QB[moduleID][randomIndex];
+          return {
+            text: question.text || question,
+            Marks: question.Marks || '',
+            co: question.co || '',
+            rbt: question.rbt || '',
+            image: question.image || question.image_link || '',
+          };
+        };
+
+        // Add two questions "before" the OR
+        for (let i = 0; i < 2; i++) {
+          const newQuestion = {
+            id: Date.now() + Math.random() + i * 0.001, // Ensure unique ID
+            location: 'before',
+            isEditing: true,
+            ...getRandomQBQuestion(mod.id), // Populate from QB
+          };
+          updatedQuestions.push(newQuestion);
+        }
+
+        // Add two questions "after" the OR
+        for (let i = 0; i < 2; i++) {
+          const newQuestion = {
+            id: Date.now() + Math.random() + 1000 + i * 0.001, // Ensure unique ID
+            location: 'after',
+            isEditing: true,
+            ...getRandomQBQuestion(mod.id), // Populate from QB
+          };
+          updatedQuestions.push(newQuestion);
+        }
+
+        return { ...mod, checked: true, questions: updatedQuestions }; // Ensure module is checked and update questions
+      })
+    );
+  };
+
 
   const handleImageUpload = (modId, qId, fileName) => {
     updateQuestion(modId, qId, 'image', fileName);
@@ -163,7 +221,7 @@ const ModuleList = ({ metadata, QB }) => {
           image: q.image
         })),
       }));
-  
+
     const payload = {
       metadata,
       subject: metadata.subject,
@@ -172,7 +230,7 @@ const ModuleList = ({ metadata, QB }) => {
     };
 
     console.log("selectedModules:", payload);
-  
+
     try {
       const res = await fetch('http://localhost:8000/upload-question-json', {
         method: 'POST',
@@ -181,7 +239,7 @@ const ModuleList = ({ metadata, QB }) => {
         },
         body: JSON.stringify(payload),
       });
-  
+
       const data = await res.json();
       console.log('Success:', data);
       alert('Data sent to backend successfully!');
@@ -190,26 +248,31 @@ const ModuleList = ({ metadata, QB }) => {
       alert('Something went wrong!');
     }
   };
-  
 
-  {
-    console.log(QB)
-  }
+
   return (
     <div className="max-w-5xl mx-auto p-6 space-y-8">
-        
+
       <div className="flex items-center justify-between px-3">
         <div>
           <span className="px-3">Exam Type: {metadata.examType}</span>
           <span className="px-3">Semester: {metadata.semester}</span>
           <span className="px-3">Subject: {metadata.subject}</span>
         </div>
-        <button
-          onClick={() => setShowPreview(true)}
-          className="px-6 py-2 bg-blue-600 text-white rounded hover:bg-blue-700"
-        >
-          Show Question Paper
-        </button>
+        <div className="flex gap-4">
+          <button
+            onClick={generateFourQuestionsPerModule}
+            className="px-6 py-2 bg-green-600 text-white rounded hover:bg-green-700"
+          >
+            Generate 2 Question Per Module
+          </button>
+          <button
+            onClick={() => setShowPreview(true)}
+            className="px-6 py-2 bg-blue-600 text-white rounded hover:bg-blue-700"
+          >
+            Show Question Paper
+          </button>
+        </div>
       </div>
 
       {modules.map((mod) => (
@@ -468,7 +531,6 @@ const ModuleList = ({ metadata, QB }) => {
           )}
         </div>
       ))}
-
     </div>
   );
 };
