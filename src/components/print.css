@@ -1,0 +1,28 @@
+@media print {
+  body {
+    margin: 0;
+    -webkit-print-color-adjust: exact;
+    print-color-adjust: exact;
+  }
+
+  #print-area {
+    width: 794px;
+    min-height: 1123px;
+    margin: auto;
+    page-break-after: always;
+    overflow: hidden;
+  }
+
+  .no-print {
+    display: none !important;
+  }
+
+  tr, td, th, img {
+    page-break-inside: avoid;
+    break-inside: avoid;
+  }
+
+  .break-after-page {
+    page-break-after: always;
+  }
+}
