@@ -141,61 +141,70 @@ const ModuleList = ({ metadata, QB }) => {
 
   // Function to generate two questions for each location ('before' and 'after' OR) in selected modules
   const generatethreequestionpermodule = () => {
-    setModules((prevModules) =>
-      prevModules.map((mod) => {
-        // Only add questions to modules that are checked
-        if (!mod.checked) {
-          return mod;
-        }
+  setModules((prevModules) =>
+    prevModules.map((mod) => {
+      if (!mod.checked) return mod;
 
-        // Filter out existing 'before' and 'after' questions to prevent accumulation
-        const existingOtherQuestions = mod.questions.filter(
-          (q) => q.location !== 'before' && q.location !== 'after'
-        );
-        let updatedQuestions = [...existingOtherQuestions]; // Start with questions not in 'before'/'after' sections
+      const usedQuestions = new Set(
+        mod.questions.map((q) => q.text.trim().toLowerCase())
+      );
 
-        // Function to get a random question from QB
-        const getRandomQBQuestion = (moduleID) => {
-          if (!QB[moduleID] || QB[moduleID].length === 0) {
-            return {}; // Return empty object if no questions
-          }
-          const randomIndex = Math.floor(Math.random() * QB[moduleID].length);
-          const question = QB[moduleID][randomIndex];
-          return {
-            text: question.text || question,
-            Marks: question.Marks || '',
-            co: question.co || '',
-            rbt: question.rbt || '',
-            image: question.image || question.image_link || '',
-          };
+      const getUniqueRandomQuestion = (moduleID, used) => {
+        const questions = QB[moduleID] || [];
+        const available = questions.filter((q) => {
+          const text = (q.text || q).trim().toLowerCase();
+          return !used.has(text);
+        });
+
+        if (available.length === 0) return null;
+
+        const randomIndex = Math.floor(Math.random() * available.length);
+        const q = available[randomIndex];
+        used.add((q.text || q).trim().toLowerCase());
+        return {
+          text: q.text || q,
+          Marks: q.Marks || '',
+          co: q.co || '',
+          rbt: q.rbt || '',
+          image: q.image || q.image_link || '',
         };
+      };
 
-        // Add two questions "before" the OR
-        for (let i = 0; i < 3; i++) {
-          const newQuestion = {
-            id: Date.now() + Math.random() + i * 0.001, // Ensure unique ID
+      const newQuestions = [];
+
+      for (let i = 0; i < 3; i++) {
+        const q = getUniqueRandomQuestion(mod.id, usedQuestions);
+        if (q) {
+          newQuestions.push({
+            id: Date.now() + Math.random(),
             location: 'before',
             isEditing: true,
-            ...getRandomQBQuestion(mod.id), // Populate from QB
-          };
-          updatedQuestions.push(newQuestion);
+            ...q,
+          });
         }
+      }
 
-        // Add two questions "after" the OR
-        for (let i = 0; i < 3; i++) {
-          const newQuestion = {
-            id: Date.now() + Math.random() + 1000 + i * 0.001, // Ensure unique ID
+      for (let i = 0; i < 3; i++) {
+        const q = getUniqueRandomQuestion(mod.id, usedQuestions);
+        if (q) {
+          newQuestions.push({
+            id: Date.now() + Math.random() + 1000,
             location: 'after',
             isEditing: true,
-            ...getRandomQBQuestion(mod.id), // Populate from QB
-          };
-          updatedQuestions.push(newQuestion);
+            ...q,
+          });
         }
+      }
 
-        return { ...mod, checked: true, questions: updatedQuestions }; // Ensure module is checked and update questions
-      })
-    );
-  };
+      return {
+        ...mod,
+        checked: true,
+        questions: newQuestions,
+      };
+    })
+  );
+};
+
 
 
   const handleImageUpload = (modId, qId, fileName) => {
