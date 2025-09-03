@@ -47,7 +47,7 @@ const QuestionPaperView = ({ metadata, modules, goBack }) => {
               {/* Metadata rows remain unchanged */}
               {/* Wrap <tr> in <tbody> and add break-avoid classes */}
               <tr><td colSpan="3" className="border p-2 text-left"><b>Exam:</b> {metadata.examType || 'N/A'}</td>
-                <td className="border p-2 text-left"><b>Academic Year:</b> {metadata.academicYear || 'N/A'}</td></tr>
+                <td className="border p-2 text-left"><b>Academic Year:</b> {metadata.acad_yr || 'N/A'}</td></tr>
               <tr><td className="border p-2 text-left"><b>Course Title:</b> {metadata.subject}</td>
                 <td className="border p-2 text-left"><b>Course Code:</b> {metadata.subjectcode}</td>
                 <td colSpan="2" className="border p-2 text-left"><b>Semester & Section:</b> {metadata.semester} ({metadata.examsections})</td></tr>

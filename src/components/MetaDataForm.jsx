@@ -13,11 +13,12 @@ const MetadataForm = ({ onSubmit, setQB }) => {
   const [questionpapersetter,setquesetionpapersetter] = useState('');
   const [file, setFile] = useState(null);
   const [questionBank, setQuestionBank] = useState({});
+  const [acad_yr,setacad_yr] = useState('');
 
   const handleSubmit = (e) => {
     e.preventDefault();
     const total_marks = examType == 'CIE' ? 50 : examType =='SEE' ? 100 : 0
-    onSubmit({ subject, semester, examType, questionBank,subjectcode,examsections,time,date,questionpapersetter,total_marks });
+    onSubmit({ subject, semester, examType, questionBank,subjectcode,examsections,time,date,questionpapersetter,total_marks,duration,acad_yr });
   };
 
   const handleFileUpload = (event) => {
@@ -81,6 +82,17 @@ const MetadataForm = ({ onSubmit, setQB }) => {
           value={subject}
           placeholder='Enter the Subject Name'
           onChange={(e) => setSubject(e.target.value)}
+          required
+          className="w-full p-2 border rounded"
+        />
+      </div>
+      <div>
+        <label className="block mb-1 font-medium">Academic Year</label>
+        <input
+          type="text"
+          value={acad_yr}
+          placeholder='Enter the Academic Year'
+          onChange={(e) => setacad_yr(e.target.value)}
           required
           className="w-full p-2 border rounded"
         />
