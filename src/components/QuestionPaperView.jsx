@@ -55,7 +55,7 @@ const QuestionPaperView = ({ metadata, modules, goBack }) => {
                 <td className="border p-2 text-left"><b>Time:</b> {metadata.time}</td>
                 <td colSpan="2" className="border p-2 text-left"><b>Duration:</b> {metadata.duration}</td></tr>
               <tr><td className="border p-2 text-left"><b>Faculty In-Charge:</b> {metadata.questionpapersetter || 'N/A'}</td>
-                <td colSpan="3" className="border p-2 text-left"><b>Max Marks:</b> {metadata.maxMarks || '50'}</td></tr>
+                <td colSpan="3" className="border p-2 text-left"><b>Max Marks:</b> {metadata.total_marks || '0'}</td></tr>
             </tbody>
           </table>
         </div>

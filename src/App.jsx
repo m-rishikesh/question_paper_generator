@@ -1,15 +1,17 @@
-import React, { useState } from 'react';
+import React, { useState,useEffect } from 'react';
 import MetadataForm from './components/MetaDataForm';
-import ModuleList from './components/ModuleList'; // Your full question editor
+import ModuleList from './components/ModuleList'; 
 
 const App = () => {
   const [metadata, setMetadata] = useState(null); // null = show form
   const [QuestionBank, setQB] = useState({});
 
   const handleMetadataSubmit = (data) => {
-    setMetadata(data); // This triggers the switch to ModuleList
+    setMetadata(data); 
   };
-
+  useEffect(()=>{
+    console.log("metadata:",metadata);
+  },[metadata]);
   return (
     <div className="min-h-screen bg-gray-100 p-6">
       {!metadata ? (

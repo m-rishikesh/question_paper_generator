@@ -139,71 +139,86 @@ const ModuleList = ({ metadata, QB }) => {
     }
   };
 
-  // Function to generate two questions for each location ('before' and 'after' OR) in selected modules
-  const generatethreequestionpermodule = () => {
+  // Function to generate three questions for each location ('before' and 'after' OR) in selected modules
+const generatethreequestionpermodule = () => {
   setModules((prevModules) =>
     prevModules.map((mod) => {
       if (!mod.checked) return mod;
 
-      const usedQuestions = new Set(
-        mod.questions.map((q) => q.text.trim().toLowerCase())
-      );
+      // Determine target marks per section based on total_marks
+      let marksPerLocation = metadata.total_marks === 50 ? 25
+                        : metadata.total_marks === 100 ? 20 
+                        : Math.floor((metadata.total_marks || 50) / 2);
+      
 
-      const getUniqueRandomQuestion = (moduleID, used) => {
-        const questions = QB[moduleID] || [];
-        const available = questions.filter((q) => {
-          const text = (q.text || q).trim().toLowerCase();
-          return !used.has(text);
-        });
+      const usedQuestions = new Set();
 
-        if (available.length === 0) return null;
-
-        const randomIndex = Math.floor(Math.random() * available.length);
-        const q = available[randomIndex];
-        used.add((q.text || q).trim().toLowerCase());
-        return {
-          text: q.text || q,
-          Marks: q.Marks || '',
-          co: q.co || '',
-          rbt: q.rbt || '',
-          image: q.image || q.image_link || '',
-        };
+      // Shuffle questions pool for randomness
+      const getShuffledQuestions = (moduleID) => {
+        const questions = [...(QB[moduleID] || [])];
+        return questions.sort(() => Math.random() - 0.5);
       };
 
-      const newQuestions = [];
+      // Greedy selection, adjusting last if needed
+      const pickQuestionsForSection = (questions, targetMarks) => {
+        let selected = [];
+        let total = 0;
 
-      for (let i = 0; i < 3; i++) {
-        const q = getUniqueRandomQuestion(mod.id, usedQuestions);
-        if (q) {
-          newQuestions.push({
+        for (const q of questions) {
+          const text = (q.text || q).trim().toLowerCase();
+          if (usedQuestions.has(text)) continue;
+
+          let marks = q.Marks ? parseInt(q.Marks) : 5;
+          if (total + marks > targetMarks) continue; // skip if it overshoots
+
+          selected.push({
             id: Date.now() + Math.random(),
-            location: 'before',
+            location: '', // Will be set later
             isEditing: true,
-            ...q,
+            text: q.text || q,
+            Marks: marks,
+            co: q.co || '',
+            rbt: q.rbt || '',
+            image: q.image || q.image_link || '',
           });
-        }
-      }
+          usedQuestions.add(text);
+          total += marks;
 
-      for (let i = 0; i < 3; i++) {
-        const q = getUniqueRandomQuestion(mod.id, usedQuestions);
-        if (q) {
-          newQuestions.push({
-            id: Date.now() + Math.random() + 1000,
-            location: 'after',
-            isEditing: true,
-            ...q,
-          });
+          if (total === targetMarks) break; // stop on exactly hitting target
         }
-      }
 
+        // If we undershot, adjust last question's marks to fill
+        if (total < targetMarks && selected.length > 0) {
+          selected[selected.length - 1].Marks += (targetMarks - total);
+          total = targetMarks;
+        }
+
+        return { selected, total };
+      };
+
+      const allQuestions = getShuffledQuestions(mod.id);
+
+      // Run selection for “before” and “after” sections
+      const { selected: beforeQuestions, total: beforeTotal } =
+        pickQuestionsForSection(allQuestions, marksPerLocation);
+      const { selected: afterQuestions, total: afterTotal } =
+        pickQuestionsForSection(allQuestions, marksPerLocation);
+
+      // Mark questions with location
       return {
         ...mod,
         checked: true,
-        questions: newQuestions,
+        questions: [
+          ...beforeQuestions.map(q => ({ ...q, location: 'before' })),
+          ...afterQuestions.map(q => ({ ...q, location: 'after' })),
+        ],
       };
     })
   );
 };
+
+
+
 
 
 

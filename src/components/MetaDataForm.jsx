@@ -6,7 +6,7 @@ const MetadataForm = ({ onSubmit, setQB }) => {
   const [subjectcode,setsubjectcode] = useState('');
   const [examsections,setexamsections] = useState('');
   const [semester, setSemester] = useState('1');
-  const [examType, setExamType] = useState('Midterm');
+  const [examType, setExamType] = useState('CIE');
   const [time,settime] = useState('');
   const [duration,setduration] = useState("");
   const [date,setdate]= useState('');
@@ -16,8 +16,8 @@ const MetadataForm = ({ onSubmit, setQB }) => {
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    // Pass form data and questionBank to the parent component
-    onSubmit({ subject, semester, examType, questionBank,subjectcode,examsections,time,date,questionpapersetter });
+    const total_marks = examType == 'CIE' ? 50 : examType =='SEE' ? 100 : 0
+    onSubmit({ subject, semester, examType, questionBank,subjectcode,examsections,time,date,questionpapersetter,total_marks });
   };
 
   const handleFileUpload = (event) => {
@@ -35,20 +35,15 @@ const MetadataForm = ({ onSubmit, setQB }) => {
     reader.onload = (e) => {
       const binaryString = e.target.result;
       const wb = XLSX.read(binaryString, { type: 'binary' });
-      // Assuming the first sheet is the one with the questions
       const ws = wb.Sheets[wb.SheetNames[0]];
       
-      // Use header: true to get column headers
       const data = XLSX.utils.sheet_to_json(ws);
       
       const newQuestionBank = {};
       
-      // Process each row with column headers
       data.forEach((row) => {
-        // Extract values based on your Excel column headers
         const moduleNumber = row['Module Number'];
         
-        // Create a structured question object with all necessary fields
         const questionObj = {
           text: row['Question'] || '', // The question text
           co: row['CO'] || '',         // CO value
@@ -57,21 +52,17 @@ const MetadataForm = ({ onSubmit, setQB }) => {
           Marks:row['Marks'] || ''
         };
         
-        // Initialize the array for this module if it doesn't exist
         if (!newQuestionBank[moduleNumber]) {
           newQuestionBank[moduleNumber] = [];
         }
         
-        // Add the complete question object to the module's array
         newQuestionBank[moduleNumber].push(questionObj);
       });
       
       console.log("Processed Question Bank:", newQuestionBank);
       
-      // Update the question bank state locally
       setQuestionBank(newQuestionBank);
       
-      // Update the QB state passed as a prop to the parent component
       setQB(newQuestionBank);
       
       alert('Questions loaded successfully!');
@@ -178,11 +169,11 @@ const MetadataForm = ({ onSubmit, setQB }) => {
           onChange={(e) => setExamType(e.target.value)}
           className="w-full p-2 border rounded"
         >
-          <option>Midterm</option>
-          <option>Final</option>
-          <option>Internal</option>
+          <option>CIE</option>
+          <option>SEE</option>
+          {/* <option>Internal</option>
           <option>Quiz</option>
-          <option>Assignment</option>
+          <option>Assignment</option> */}
         </select>
       </div>
       {/* File Upload Section */}
