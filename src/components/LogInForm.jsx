@@ -49,7 +49,7 @@ function LogInForm({setloggedIn}) {
       {/* Logo at the top */}
       <div style={{ display: "flex", justifyContent: "center", marginBottom: "15px" }}>
             <img
-            src="../public/sjb_logo.jpg" 
+            src="/sjb_logo.jpg" 
             alt="Logo"
             style={{ width: "80px" }}
         />
