@@ -18,7 +18,7 @@ function LogInForm({setloggedIn}) {
   // Handle form submission
   const handleSubmit = (e) => {
     e.preventDefault(); // Prevent page refresh
-    console.log('Form Submitted:', formData);
+
 
     // Example: API call or validation
     if (formData.username == 'admin' && formData.password == 'tst') {

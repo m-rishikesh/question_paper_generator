@@ -1,6 +1,6 @@
 
 const questionheader = ({metadata}) => {
-    console.log("Metadata in questionheader:", metadata);
+    // console.log("Metadata in questionheader:", metadata);
   return (
     <div className="overflow-x-auto mb-6 font-serif">
     <div className="flex items-center justify-between">

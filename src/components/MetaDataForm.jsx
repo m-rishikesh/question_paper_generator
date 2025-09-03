@@ -60,7 +60,7 @@ const MetadataForm = ({ onSubmit, setQB }) => {
         newQuestionBank[moduleNumber].push(questionObj);
       });
       
-      console.log("Processed Question Bank:", newQuestionBank);
+      // console.log("Processed Question Bank:", newQuestionBank);
       
       setQuestionBank(newQuestionBank);
       
@@ -74,7 +74,7 @@ const MetadataForm = ({ onSubmit, setQB }) => {
 
   return (
     <form onSubmit={handleSubmit} className="max-w-md mx-auto p-6 space-y-4 bg-white shadow rounded-xl mt-8">
-      {console.log(questionBank)}
+      {/* {console.log(questionBank)} */}
       <div>
         <label className="block mb-1 font-medium">Subject</label>
         <input

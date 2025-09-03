@@ -253,7 +253,7 @@ const generatethreequestionpermodule = () => {
       modules: selectedModules,
     };
 
-    console.log("selectedModules:", payload);
+    // console.log("selectedModules:", payload);
 
     try {
       const res = await fetch('http://localhost:8000/upload-question-json', {
@@ -265,7 +265,7 @@ const generatethreequestionpermodule = () => {
       });
 
       const data = await res.json();
-      console.log('Success:', data);
+      // console.log('Success:', data);
       alert('Data sent to backend successfully!');
     } catch (err) {
       console.error('Error uploading:', err);
